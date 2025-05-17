@@ -1,648 +1,1232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detailed Gantt Chart for Software Company Expansion</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<title>God Tier Cozy Flashcards - Practice, Application & Advanced Features</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Comfortaa&display=swap');
+
+  /* Reset and base */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Comfortaa', cursive, sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-color);
+    min-height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+    transition: background 0.7s, color 0.7s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  main {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Variables for Light Mode */
+  :root {
+    --bg-gradient: linear-gradient(120deg, #f9f1e7 0%, #e9e1d9 100%);
+    --text-color: #3f2d20;
+    --card-bg: #fffaf1;
+    --card-back-bg: #f0d8b2;
+    --card-shadow: rgba(62, 45, 32, 0.24);
+    --button-bg: #f3c677;
+    --button-color: #422800;
+    --button-hover-bg: #422800;
+    --button-hover-color: #ffeabf;
+    --mode-selector-bg: #ffeecc;
+    --mode-selector-color: #5c3a00;
+    --mode-selector-active-bg: #422800;
+    --mode-selector-active-color: #ffeabf;
+    --quiz-option-bg: #fff9e6;
+    --quiz-option-hover-bg: #f3c677;
+    --quiz-correct-bg: #a2d18a;
+    --quiz-correct-color: #1a3b00;
+    --quiz-incorrect-bg: #f19c9c;
+    --quiz-incorrect-color: #581a1a;
+    --toggle-bg: #f3c677;
+    --toggle-ball-bg: #ffdca9;
+    --check-correct: #4caf50;
+    --check-wrong: #c62828;
+  }
+
+  /* Variables for Dark Mode */
+  html.dark, body.dark {
+    --bg-gradient: linear-gradient(120deg, #131520 0%, #1e2838 100%);
+    --text-color: #cfcfd3;
+    --card-bg: #1f2633;
+    --card-back-bg: #4a532e;
+    --card-shadow: rgba(10, 10, 10, 0.8);
+    --button-bg: #556b2f;
+    --button-color: #d0cbbf;
+    --button-hover-bg: #d0cbbf;
+    --button-hover-color: #556b2f;
+    --mode-selector-bg: rgba(69, 85, 42, 0.22);
+    --mode-selector-color: #cfcfd3;
+    --mode-selector-active-bg: #d0cbbf;
+    --mode-selector-active-color: #556b2f;
+    --quiz-option-bg: #425641aa;
+    --quiz-option-hover-bg: #556b2f33;
+    --quiz-correct-bg: #7bb770aa;
+    --quiz-correct-color: #e9f1db;
+    --quiz-incorrect-bg: #bc5e5daa;
+    --quiz-incorrect-color: #f2cccd;
+    --toggle-bg: #556b2f;
+    --toggle-ball-bg: #afb58c;
+  }
+
+  /* Top Controls Wrapper including shuffle & focus toggle */
+  .top-controls {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 2.5rem 0 1.5rem 0;
+    padding: 0.5rem 1.2rem;
+    background: var(--mode-selector-bg);
+    border-radius: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  /* Mode Selector */
+  .mode-selector {
+    display: flex;
+    border-radius: 40px;
+    flex: 1;
+    overflow: hidden;
+    min-width: 180px;
+    box-shadow:
+      inset 2px 2px 7px rgba(255 255 255 / 0.7),
+      inset -2px -2px 7px rgba(0 0 0 / 0.15);
+    position: relative;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 0.8rem 0;
+    font-weight: 700;
+    font-size: 1.05rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--mode-selector-color);
+    transition:
+      background-color 0.35s cubic-bezier(0.4,0,0.2,1),
+      color 0.35s cubic-bezier(0.4,0,0.2,1);
+    user-select: none;
+    position: relative;
+    z-index: 1;
+  }
+
+  .mode-btn:hover,
+  .mode-btn:focus-visible {
+    outline: none;
+    background: var(--button-hover-bg);
+    color: var(--button-hover-color);
+  }
+
+  .mode-btn.active {
+    background: var(--mode-selector-active-bg);
+    color: var(--mode-selector-active-color);
+    box-shadow:
+      0 4px 15px rgba(0,0,0,0.25),
+      inset 0 0 10px rgba(255 255 255 / 0.35);
+    z-index: 2;
+  }
+
+  /* Buttons: shuffle & focus toggle */
+  .extra-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: nowrap;
+  }
+  button.extra-btn {
+    background: var(--button-bg);
+    color: var(--button-color);
+    border-radius: 30px;
+    padding: 0.5rem 1rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow:
+      0 5px 15px rgba(66, 40, 0, 0.25),
+      inset 0 2px 6px rgba(255 204 51 / 0.4);
+    border: none;
+    user-select: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  button.extra-btn:hover, button.extra-btn:focus-visible {
+    background: var(--button-hover-bg);
+    color: var(--button-hover-color);
+    outline: none;
+  }
+
+  label.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    user-select: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  label.checkbox-label input {
+    margin: 0;
+    accent-color: var(--button-bg);
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Flashcard Container */
+  .flashcard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+    max-width: 520px;
+    min-height: 340px;
+    margin: 0 auto 1.5rem auto;
+    position: relative;
+  }
+
+  /* Flashcard */
+  .flashcard {
+    width: 100%;
+    max-width: 420px;
+    min-height: 240px;
+    background: var(--card-bg);
+    border-radius: 1.7rem;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.09);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    font-weight: 800;
+    color: var(--text-color);
+    text-align: center;
+    margin: 0 auto 0.7rem auto;
+    user-select: text;
+    cursor: pointer;
+    position: relative;
+    padding: 2.2rem 2rem;
+    /* Remove perspective and 3D transforms */
+    /* Remove transition and transform */
+  }
+
+  .flashcard__front,
+  .flashcard__back {
+    width: 100%;
+    min-height: 180px;
+    border-radius: 28px;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1.8rem 2rem;
+    font-weight: 800;
+    position: relative;
+    z-index: 1;
+  }
+
+  .flashcard__front {
+    background: var(--card-bg);
+    color: var(--text-color);
+  }
+
+  .flashcard__back {
+    background: var(--card-back-bg);
+    color: var(--text-color);
+  }
+
+  /* Show only the correct side */
+  .flashcard .flashcard__front[aria-hidden="false"] { display: flex; }
+  .flashcard .flashcard__back[aria-hidden="false"] { display: flex; }
+  .flashcard .flashcard__front[aria-hidden="true"] { display: none; }
+  .flashcard .flashcard__back[aria-hidden="true"] { display: none; }
+
+  /* Status icon on flashcard (check or X) */
+  .status-icon {
+    margin-top: 1rem;
+    font-size: 2.2rem;
+    user-select: none;
+    line-height: 1;
+  }
+  .status-icon.correct {
+    color: var(--check-correct);
+  }
+  .status-icon.incorrect {
+    color: var(--check-wrong);
+  }
+
+  /* Navigation */
+  .flashcards-navigation {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.7rem;
+    margin: 0 auto 0.5rem auto;
+  }
+
+  .flashcards-navigation button {
+    flex: 1;
+    padding: 0.7rem 0;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 30px;
+    box-shadow:
+      0 6px 14px rgba(66, 40, 0, 0.3),
+      inset 0 2px 6px rgba(255 204 51 / 0.4);
+    background: var(--button-bg);
+    color: var(--button-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    user-select: none;
+    border: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .flashcards-navigation button::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0; right: 0;
+    background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+    z-index: 0;
+  }
+  .flashcards-navigation button:hover::before,
+  .flashcards-navigation button:focus-visible::before {
+    transform: translateX(100%);
+  }
+  .flashcards-navigation button:hover,
+  .flashcards-navigation button:focus-visible {
+    background: var(--button-hover-bg);
+    color: var(--button-hover-color);
+    outline: none;
+  }
+  .flashcards-navigation button:active {
+    transform: scale(0.98);
+  }
+
+  /* Page Indicator */
+  .page-indicator {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-bottom: 0.2rem;
+    user-select: none;
+  }
+
+  /* Quiz Section */
+  #quiz-section {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto 1.2rem auto;
+    background: var(--card-bg);
+    border-radius: 1.2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 1.2rem 1.2rem 1.5rem 1.2rem;
+    display: block;
+  }
+  #quiz-section[hidden] {
+    display: none !important;
+  }
+  .quiz-question {
+    font-weight: 700;
+    padding-bottom: 1.1rem;
+    font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+    user-select: text;
+    letter-spacing: 0.75px;
+  }
+
+  .quiz-options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .quiz-options li {
+    margin: 0;
+  }
+
+  .quiz-option-btn {
+    width: 100%;
+    background: var(--quiz-option-bg);
+    border-radius: 25px;
+    padding: 0.75rem 1rem;
+    border: 2.5px solid transparent;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow:
+      0 6px 15px rgba(66, 40, 0, 0.21),
+      inset 0 0 7px rgba(255 204 51 / 0.18);
+    transition:
+      background-color 0.35s ease,
+      border-color 0.35s ease,
+      color 0.35s ease,
+      box-shadow 0.35s ease;
+    user-select: none;
+    color: var(--text-color);
+    text-align: center;
+    font-family: 'Comfortaa', cursive, sans-serif;
+  }
+
+  .quiz-option-btn:hover,
+  .quiz-option-btn:focus-visible {
+    outline: none;
+    background: var(--quiz-option-hover-bg);
+    border-color: var(--button-color);
+    box-shadow:
+      0 6px 12px rgba(66, 40, 0, 0.4),
+      inset 0 0 15px rgba(255 204 51 / 0.35);
+  }
+
+  .quiz-option-btn.correct {
+    background-color: var(--quiz-correct-bg);
+    border-color: #4caf50;
+    color: var(--quiz-correct-color);
+    cursor: default;
+    box-shadow: none;
+  }
+
+  .quiz-option-btn.incorrect {
+    background-color: var(--quiz-incorrect-bg);
+    border-color: #c62828;
+    color: var(--quiz-incorrect-color);
+    cursor: default;
+    box-shadow: none;
+  }
+
+  .feedback {
+    margin-top: 1rem;
+    font-weight: 700;
+    font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+    text-align: center;
+    min-height: 1.5rem;
+    user-select: text;
+    letter-spacing: 0.5px;
+  }
+
+  /* Theme Toggle */
+  .toggle-theme {
+    position: relative;
+    width: 56px;
+    height: 30px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+  }
+
+  .toggle-theme input {
+    display: none;
+  }
+
+  .slider {
+    position: absolute;
+    inset: 0;
+    background: var(--toggle-bg);
+    border-radius: 30px;
+    box-shadow:
+      inset 2px 2px 8px rgba(255 255 255 / 0.85),
+      inset -2px -2px 8px rgba(0 0 0 / 0.12);
+    transition: background 0.5s ease;
+  }
+
+  .slider::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    background: var(--toggle-ball-bg);
+    border-radius: 50%;
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.2);
+    transition:
+      transform 0.5s cubic-bezier(0.4,0,0.2,1),
+      background 0.5s cubic-bezier(0.4,0,0.2,1),
+      box-shadow 0.5s cubic-bezier(0.4,0,0.2,1);
+    z-index: 2;
+  }
+
+  .slider .sun-rays,
+  .slider .moon,
+  .slider .sun {
+    position: absolute;
+    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.5s ease;
+    user-select: none;
+  }
+
+  /* Sun Icon (circle + rays) */
+  .slider .sun {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--mode-selector-active-bg);
+    box-shadow:
+      0 0 8px var(--mode-selector-active-bg);
+    filter: drop-shadow(0 0 4px var(--mode-selector-active-bg));
+    z-index: 3;
+    opacity: 1;
+  }
+
+  .slider .sun-rays {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    box-shadow:
+      0 -14px 0 var(--mode-selector-active-bg),
+      0 14px 0 var(--mode-selector-active-bg),
+      14px 0 0 var(--mode-selector-active-bg),
+      -14px 0 0 var(--mode-selector-active-bg),
+      10px 10px 0 var(--mode-selector-active-bg),
+      -10px 10px 0 var(--mode-selector-active-bg),
+      10px -10px 0 var(--mode-selector-active-bg),
+      -10px -10px 0 var(--mode-selector-active-bg);
+    opacity: 1;
+  }
+
+  /* Moon Icon (crescent shape) */
+  .slider .moon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--mode-selector-active-bg);
+    box-shadow:
+      inset 6px 0 0 var(--toggle-bg);
+    opacity: 0;
+    z-index: 3;
+  }
+
+  /* Toggle Checked */
+  input:checked + .slider {
+    background: var(--button-hover-bg);
+    box-shadow:
+      inset 1px 1px 6px rgba(20, 20, 20, 0.65),
+      0 0 16px var(--button-hover-bg);
+  }
+
+  input:checked + .slider::before {
+    transform: translateX(26px);
+    background: var(--mode-selector-color);
+    box-shadow:
+      0 2px 12px var(--mode-selector-color);
+  }
+
+  input:checked + .slider .sun-rays,
+  input:checked + .slider .sun {
+    opacity: 0;
+  }
+
+  input:checked + .slider .moon {
+    opacity: 1;
+  }
+
+  input:not(:checked) + .slider .sun-rays,
+  input:not(:checked) + .slider .sun {
+    opacity: 1;
+  }
+
+  input:not(:checked) + .slider .moon {
+    opacity: 0;
+  }
+
+  /* Keyboard focus visible for accessibility */
+  button:focus-visible, .mode-btn:focus-visible, .quiz-option-btn:focus-visible, #flip-btn:focus-visible,
+  button.extra-btn:focus-visible, label.checkbox-label:focus-within {
+    outline: 3px solid var(--button-hover-bg);
+    outline-offset: 3px;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 600px) {
+    .top-controls, .flashcard-container, .flashcard, #quiz-section, .flashcards-navigation, #progress-tracker, .page-indicator {
+      max-width: 98vw;
+      min-width: 0;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+    .flashcard {
+      padding: 1.2rem 0.7rem;
+      font-size: 1.1rem;
+    }
+    #quiz-section {
+      padding: 0.7rem 0.5rem 1rem 0.5rem;
+    }
+  }
+</style>
 </head>
 <body>
+<main>
+  <div class="top-controls">
+    <nav class="mode-selector" role="tablist" aria-label="Select mode">
+      <button class="mode-btn active" id="practice-mode-btn" role="tab" aria-selected="true" tabindex="0" aria-controls="practice">Practice</button>
+      <button class="mode-btn" id="application-mode-btn" role="tab" aria-selected="false" tabindex="-1" aria-controls="application">Application</button>
+    </nav>
 
-    <!-- Adjusted legend -->
-    <div class="legend">
-        <h3>Legend</h3>
-        <ul>
-            <li>
-                <span class="dependency-arrow" style="cursor: pointer;">➔</span>
-                <a href="#dependencies" class="legend-link">Dependencies</a>
-            </li>
-            <li>
-                <span class="red-circle" style="cursor: pointer;">🔴</span>
-                <a href="#critical-path" class="legend-link">Critical Path</a>
-            </li>
-            <li>
-                <span class="milestone" style="cursor: pointer;">🔷</span>
-                <a href="#milestones" class="legend-link">Milestone</a>
-            </li>
-        </ul>
+    <div class="extra-controls" aria-label="Extra controls">
+      <button class="extra-btn" id="shuffle-btn" title="Shuffle Flashcards">Shuffle 🔀</button>
     </div>
 
-    <!-- Summary button -->
-    <div class="summary-button" id="summary-button" style="margin-top: 20px;">Tap me for Summary</div>
+    <label class="toggle-theme" title="Toggle dark/light mode" aria-label="Toggle dark/light mode">
+      <input type="checkbox" id="theme-toggle" aria-checked="false" />
+      <span class="slider" aria-hidden="true">
+        <span class="sun-rays"></span>
+        <span class="sun"></span>
+        <span class="moon"></span>
+      </span>
+    </label>
+  </div>
 
-    <!-- Summary modal -->
-    <div class="summary-modal" id="summary-modal">
-        <div class="summary-content">
-            <button class="close-summary" id="close-summary">✖</button>
-            <p>
-                This Gantt chart outlines the 7-month expansion plan of a software company from May 1 to November 30. 
-                It includes key phases such as office procurement, equipment acquisition, hiring, IT setup, compliance, 
-                logistics, and marketing. Major milestones—such as lease finalization, office setup, and launch—are 
-                clearly marked, with task dependencies indicated via arrows. A critical path has been identified to 
-                ensure timely execution of essential activities. All resources, durations, and deadlines have been 
-                realistically allocated based on standard practices in Philippine business operations.
-            </p>
-        </div>
+  <div class="flashcard-container" tabindex="0" aria-live="polite" aria-label="Flashcard interactive area" role="region" aria-atomic="true">
+    <!-- Practice flashcard -->
+    <div class="flashcard" id="flashcard" role="button" aria-pressed="false" tabindex="0" aria-label="Flashcard, click or press enter to flip">
+      <div class="flashcard__front" id="card-front" aria-hidden="false"></div>
+      <div class="flashcard__back" id="card-back" aria-hidden="true"></div>
+      <div class="status-icon" id="status-icon" aria-live="polite" aria-label="Answer status"></div>
     </div>
 
-    <h1>Gantt Chart for Software Company Expansion</h1>
+    <!-- Application quiz (hidden by default) -->
+    <section id="quiz-section" hidden>
+      <div class="quiz-question" id="quiz-question" tabindex="0"></div>
+      <ul class="quiz-options" id="quiz-options" role="list"></ul>
+      <div class="feedback" id="quiz-feedback" aria-live="polite" role="alert"></div>
+    </section>
+  </div>
 
-    <!-- Gantt Chart Table -->
-    <div class="gantt-container" style="position: relative;">
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-            <thead>
-                <tr>
-                    <th style="width: 30%; text-align: left; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;">TASK</th>
-                    <th style="width: 50%; text-align: left; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;">TIMEFRAME</th>
-                    <th style="width: 20%; text-align: left; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;">PERSONNEL ALLOCATION</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Month 1: Initial Planning and Research -->
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Month 1: Initial Planning and Research</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                </tr>
-                <tr id="task2" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Search and Lease Office Space
-                        <span class="dependency-arrow" data-task="task2">➔</span>
-                        <span class="red-circle" data-tooltip="Without this, renovation and legal compliance can’t even begin." style="cursor: pointer;">🔴</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 0%; width: 30%; background-color: lightblue;">
-                            <span>May 1 - May 30</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">2 Real Estate Agents, 1 Admin Staff</td>
-                </tr>
-                <tr id="task3">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Vendor Selection
-                        <span class="dependency-arrow" data-task="task3">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 10%; width: 20%; background-color: lightgreen;">
-                            <span>May 10 - May 25</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Procurement Team</td>
-                </tr>
-                <tr id="task4">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Research Suppliers
-                        <span class="dependency-arrow" data-task="task4">➔</span>
-                        <span class="milestone" data-milestone="Office Lease Signed" data-date="May 30" data-reason="End of 'Search and Lease Office Space'">🔷</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 0%; width: 25%; background-color: lightgreen;">
-                            <span>May 10 - May 25</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Procurement Team</td>
-                </tr>
-                <tr id="task5">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Risk Identification and Analysis
-                        <span class="dependency-arrow" data-task="task5">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 0%; width: 40%; background-color: darkslategray;">
-                            <span>May 16 - June 5</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Risk Management Team</td>
-                </tr>
-                <tr id="task6" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Renovation and Office Setup Planning
-                        <span class="dependency-arrow" data-task="task6">➔</span>
-                        <span class="red-circle" data-tooltip="This overlaps lease end and must finish before execution starts." style="cursor: pointer;">🔴</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 0%; width: 55%; background-color: salmon;">
-                            <span>May 21 - July 5</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">1 Architect, 2 Engineers</td>
-                </tr>
+  <!-- Add this after the flashcard-container, before .flashcards-navigation -->
+  <div id="done-message" hidden style="text-align:center; margin:2rem 0;">
+    <div style="font-size:1.5rem; font-weight:700; margin-bottom:1rem;">🎉 You’re done!</div>
+    <button id="restart-all-btn" class="extra-btn" style="margin:0.5rem;">Restart All</button>
+    <button id="retry-incorrect-btn" class="extra-btn" style="margin:0.5rem;" hidden>Retry Incorrect</button>
+  </div>
 
-                <!-- Month 2: Procurement, Hiring Process, and Preparation -->
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Month 2: Procurement, Hiring Process, and Preparation</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                </tr>
-                <tr id="task7" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Renovation and Office Setup
-                        <span class="dependency-arrow" data-task="task7">➔</span>
-                        <span class="red-circle" data-tooltip="Essential physical setup for everything that follows." style="cursor: pointer;">🔴</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 20%; width: 25%; background-color: salmon;">
-                            <span>June 1 - June 25</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Facilities Team</td>
-                </tr>
-                <tr id="task8" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Order Furniture and Equipment
-                        <span class="dependency-arrow" data-task="task8">➔</span>
-                        <span class="red-circle" data-tooltip="Directly linked to the completion of renovation and precedes delivery." style="cursor: pointer;">🔴</span>
-                        <span class="milestone" data-milestone="Equipment Fully Delivered" data-date="July 7" data-reason="End of 'Delivery and Setup'">🔷</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 20%; width: 30%; background-color: pink;">
-                            <span>June 5 - June 30</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">1 Purchasing Officer, 1 Inventory Analyst</td>
-                </tr>
-                <tr id="task11">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Job Postings and Recruitment
-                        <span class="dependency-arrow" data-task="task11">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 20%; width: 15%; background-color: aqua;">
-                            <span>June 1 - June 15</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">HR Team</td>
-                </tr>
-                <tr id="task12">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Interviews and Hiring
-                        <span class="dependency-arrow" data-task="task12">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 20%; width: 25%; background-color: gray;">
-                            <span>June 15 - June 30</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">HR Team</td>
-                </tr>
-                <tr id="task13">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Mitigation Plans
-                        <span class="dependency-arrow" data-task="task13">➔</span>
-                        <span class="milestone" data-milestone="IT Systems Live" data-date="July 20" data-reason="After 'System Testing' ends">🔷</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 20%; width: 30%; background-color: olive;">
-                            <span>June 15 - June 30</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Risk Management Team</td>
-                </tr>
+  <div class="flashcards-navigation" role="navigation" aria-label="Flashcard navigation">
+    <button id="prev-btn" aria-label="Previous flashcard">← Prev</button>
+    <button id="flip-btn" aria-label="Flip flashcard">Flip</button>
+    <button id="next-btn" aria-label="Next flashcard">Next →</button>
+  </div>
 
-                <!-- Month 3: IT Setup, Compliance, and Onboarding -->
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Month 3: IT Setup, Compliance, and Onboarding</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                </tr>
-                <tr id="task14" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Set Up Network and Servers
-                        <span class="dependency-arrow" data-task="task14">➔</span>
-                        <span class="red-circle" data-tooltip="Needs office space, power, and hardware ready; must finish before testing." style="cursor: pointer;">🔴</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 35%; width: 35%; background-color: yellow;">
-                            <span>June 15 - July 15</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">2 Network Engineers</td>
-                </tr>
-                <tr id="task15" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Install Software and Systems
-                        <span class="dependency-arrow" data-task="task15">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 35%; width: 20%; background-color: orange;">
-                            <span>July 8 - July 14</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">2 IT Technicians</td>
-                </tr>
-                <tr id="task17" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Test Systems and Infrastructure
-                        <span class="dependency-arrow" data-task="task17">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 35%; width: 25%; background-color: magenta;">
-                            <span>July 15 - August 7</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">1 QA Analyst, 1 SysAdmin</td>
-                </tr>
-                <tr id="task19" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Onboarding and Training
-                        <span class="dependency-arrow" data-task="task19">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 35%; width: 35%; background-color: lightcoral;">
-                            <span>July 15 - August 7</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">1 Trainer, 1 HR Officer</td>
-                </tr>
-                <tr id="task22" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Delivery and Setup
-                        <span class="dependency-arrow" data-task="task22">➔</span>
-                        <span class="red-circle" data-tooltip="Cannot start if furniture is late. If this is delayed, everything inside the office stalls." style="cursor: pointer;">🔴</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 35%; width: 15%; background-color: purple;">
-                            <span>Jul 1 - Jul 7</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">2 Movers, 1 Supervisor</td>
-                </tr>
-                <tr id="task23">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Apply for Permits
-                        <span class="dependency-arrow" data-task="task23">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 35%; width: 30%; background-color: darkorange;">
-                            <span>May 5 - June 20</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">1 Legal Officer</td>
-                </tr>
+  <div id="progress-tracker" aria-live="polite" aria-atomic="true" style="margin-top:0.8rem; font-weight:700; font-size:1rem; color: var(--text-color);"></div>
+  <div class="page-indicator" id="page-indicator" aria-live="polite"></div>
+</main>
 
-                <!-- Month 4: IT Testing, Continued Onboarding, and Final Compliance Check -->
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Month 4: IT Testing, Continued Onboarding, and Final Compliance Check</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Test Systems and Infrastructure (cont.)
-                        <span class="dependency-arrow" data-task="task24">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 50%; width: 15%; background-color: magenta;">
-                            <span>Aug 1 - Aug 7</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">IT Team</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Onboarding and Training (cont.)
-                        <span class="dependency-arrow" data-task="task25">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 50%; width: 15%; background-color: lightcoral;">
-                            <span>Aug 1 - Aug 7</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">HR Team</td>
-                </tr>
-                <tr id="task26" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Final Compliance Check
-                        <span class="dependency-arrow" data-task="task26">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 50%; width: 15%; background-color: darkcyan;">
-                            <span>Aug 5 - Aug 10</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Legal Team</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Internal Communication
-                        <span class="dependency-arrow" data-task="task27">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 50%; width: 15%; background-color: steelblue;">
-                            <span>Aug 1 - Aug 31</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Communications Team</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        External Communication
-                        <span class="dependency-arrow" data-task="task28">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 50%; width: 15%; background-color: teal;">
-                            <span>Aug 1 - Aug 31</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Communications Team</td>
-                </tr>
+<script>
+  // Fisher-Yates shuffle function (add this at the top of your script)
+  function shuffle(array) {
+    let m = array.length, t, i;
+    while (m) {
+      i = Math.floor(Math.random() * m--);
+      t = array[m];
+      array[m] = array[i];
+      array[i] = t;
+    }
+    return array;
+  }
 
-                <!-- Month 5: Logistics and Relocation -->
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Month 5: Logistics and Relocation</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                </tr>
-                <tr id="task29" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Plan Relocation Logistics
-                        <span class="dependency-arrow" data-task="task29">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 65%; width: 10%; background-color: darkred;">
-                            <span>Sep 1 - Sep 10</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Logistics Team</td>
-                </tr>
-                <tr id="task30" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Move Office Equipment
-                        <span class="dependency-arrow" data-task="task30">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 65%; width: 10%; background-color: darkblue;">
-                            <span>Sep 11 - Sep 20</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Logistics Team</td>
-                </tr>
-                <tr id="task31" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Set Up the New Office Space
-                        <span class="dependency-arrow" data-task="task31">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 65%; width: 10%; background-color: darkgreen;">
-                            <span>Sep 21 - Sep 30</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Facilities Team</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Final Onboarding
-                        <span class="dependency-arrow" data-task="task32">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 65%; width: 10%; background-color: lightcoral;">
-                            <span>Sep 1 - Sep 15</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">HR Team</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Milestone Reporting
-                        <span class="dependency-arrow" data-task="task33">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 65%; width: 10%; background-color: navy;">
-                            <span>Sep 10 - Sep 30</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Project Management Team</td>
-                </tr>
+  (() => {
+    const practiceBtn = document.getElementById('practice-mode-btn');
+    const applicationBtn = document.getElementById('application-mode-btn');
+    const flashcard = document.getElementById('flashcard');
+    const front = document.getElementById('card-front');
+    const back = document.getElementById('card-back');
+    const flipBtn = document.getElementById('flip-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    // FIX: Correct the pageIndicator reference to match the HTML id
+    const pageIndicator = document.getElementById('page-indicator');
+    const progressTracker = document.getElementById('progress-tracker');
+    const statusIcon = document.getElementById('status-icon');
+    const cardContainer = document.querySelector('.flashcard-container');
+    const quizSection = document.getElementById('quiz-section');
+    const quizQuestion = document.getElementById('quiz-question');
+    const quizOptions = document.getElementById('quiz-options');
+    const quizFeedback = document.getElementById('quiz-feedback');
+    const themeToggleInput = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+    const body = document.body;
 
-                <!-- Month 6: Office Setup and Final Compliance Check -->
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Month 6: Office Setup and Final Compliance Check</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                </tr>
-                <tr id="task34" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Complete Office Setup
-                        <span class="dependency-arrow" data-task="task34">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 75%; width: 10%; background-color: salmon;">
-                            <span>Oct 1 - Oct 15</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Facilities Team</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Final Testing and Adjustments
-                        <span class="dependency-arrow" data-task="task35">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 75%; width: 5%; background-color: magenta;">
-                            <span>Oct 1 - Oct 7</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">IT Team</td>
-                </tr>
-                <tr id="task36" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Finalize Compliance
-                        <span class="dependency-arrow" data-task="task36">➔</span>
-                        <span class="milestone" data-milestone="Compliance Approval Received" data-date="Oct 15" data-reason="End of 'Finalize Compliance'">🔷</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 75%; width: 5%; background-color: darkcyan;">
-                            <span>Oct 8 - Oct 15</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">1 Compliance Auditor</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Final Milestone Reporting
-                        <span class="dependency-arrow" data-task="task37">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 75%; width: 10%; background-color: steelblue;">
-                            <span>Oct 1 - Oct 31</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Project Management Team</td>
-                </tr>
+    const shuffleBtn = document.getElementById('shuffle-btn');
+    // Remove focusToggle references
+    // const focusToggle = document.getElementById('focus-toggle');
 
-                <!-- Month 7: Finalizing the Project and Risk Management -->
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Month 7: Finalizing the Project and Risk Management</strong></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"></td>
-                </tr>
-                <tr id="task38" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Contingency Planning and Risk Mitigation
-                        <span class="dependency-arrow" data-task="task38">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 85%; width: 10%; background-color: olive;">
-                            <span>Nov 1 - Nov 15</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Risk Management Team</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Finalizing Marketing Materials and Strategy
-                        <span class="dependency-arrow" data-task="task39">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 85%; width: 10%; background-color: darkcyan;">
-                            <span>Nov 1 - Nov 15</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Marketing Team</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Final Reporting to Stakeholders
-                        <span class="dependency-arrow" data-task="task40">➔</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 85%; width: 5%; background-color: teal;">
-                            <span>Nov 10 - Nov 15</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Project Management Team</td>
-                </tr>
-                <tr id="task41" class="critical-path">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Launch Marketing Campaign
-                        <span class="dependency-arrow" data-task="task41">➔</span>
-                        <span class="red-circle" data-tooltip="End goal. All other tasks funnel into this." style="cursor: pointer;">🔴</span>
-                        <span class="milestone" data-milestone="Launch Day" data-date="Nov 16" data-reason="Start of 'Launch Marketing Campaign'">🔷</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 85%; width: 10%; background-color: steelblue;">
-                            <span>Nov 16 - Nov 30</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">1 Digital Marketer</td>
-                </tr>
-                <tr id="task42">
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        Finalize Remaining Tasks
-                        <span class="dependency-arrow" data-task="task42">➔</span>
-                        <span class="milestone" data-milestone="Project Closed" data-date="Nov 30" data-reason="End of 'Finalize Remaining Tasks'">🔷</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        <div class="task-bar" style="left: 85%; width: 10%; background-color: navy;">
-                            <span>Nov 16 - Nov 30</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">1 Project Manager</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    // Add references for the done message and buttons
+    const doneMessage = document.getElementById('done-message');
+    const restartAllBtn = document.getElementById('restart-all-btn');
+    const retryIncorrectBtn = document.getElementById('retry-incorrect-btn');
 
-    <!-- Tooltip for displaying dependencies -->
-    <div id="dependency-tooltip" class="tooltip" style="display: none;">
-        <div class="tooltip-content"></div>
-    </div>
+    // Data and state
+    let cardsRaw = [
+      {
+        front: 'What is the capital of France?',
+        back: 'Paris',
+        options: ['Paris', 'Rome', 'Madrid', 'Berlin']
+      },
+      {
+        front: 'What is the tallest mountain in the world?',
+        back: 'Mount Everest',
+        options: ['K2', 'Mount Kilimanjaro', 'Mount Everest', 'Mount Elbrus']
+      },
+      {
+        front: 'What is the chemical symbol for water?',
+        back: 'H₂O',
+        options: ['CO2', 'H₂O', 'HO', 'O2']
+      },
+      {
+        front: 'Who wrote "Romeo and Juliet"?',
+        back: 'William Shakespeare',
+        options: ['William Shakespeare', 'Mark Twain', 'Jane Austen', 'Charles Dickens']
+      },
+      {
+        front: 'What is the speed of light?',
+        back: 'Approximately 299,792 km per second',
+        options: [
+          'Approximately 150,000 km per second',
+          'Approximately 299,792 km per second',
+          'Approximately 500,000 km per second',
+          'Approximately 1,000,000 km per second'
+        ]
+      },
+      {
+        front: 'In which year did the Apollo 11 moon landing occur?',
+        back: '1969',
+        options: ['1965', '1969', '1972', '1959']
+      },
+      {
+        front: 'What is the formula for the area of a circle?',
+        back: 'A = πr²',
+        options: ['A = 2πr', 'A = πr²', 'A = πd', 'A = r²']
+      },
+      {
+        front: 'Who painted the Mona Lisa?',
+        back: 'Leonardo da Vinci',
+        options: ['Michelangelo', 'Leonardo da Vinci', 'Raphael', 'Donatello']
+      },
+      {
+        front: 'What is the largest organ in the human body?',
+        back: 'The skin',
+        options: ['The brain', 'The heart', 'The skin', 'The lungs']
+      },
+      {
+        front: 'What currency is used in Japan?',
+        back: 'Japanese Yen (¥)',
+        options: ['US Dollar ($)', 'Euro (€)', 'Japanese Yen (¥)', 'British Pound (£)']
+      }
+    ];
 
-    <!-- Budget Allocation Table -->
-    <h1>Budget Allocation (Total: ₱8,000,000)</h1>
-    <div class="budget-container" style="display: flex; align-items: flex-start; margin-top: 20px;">
-        <div class="buffer-info" id="buffer-info" style="margin-right: 10px;">
-            Contingency & Buffer Planning
-        </div>
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th style="width: 40%; text-align: left; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;">Category</th>
-                    <th style="width: 40%; text-align: left; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;">Details</th>
-                    <th style="width: 20%; text-align: left; padding: 10px; background-color: #f2f2f2; border: 1px solid #ddd;">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Office Lease (7 months)</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">100 sqm office at ₱987/sqm/month</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱700,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Office Renovation & Fit-out</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">High-grade finishes, energy-efficient lighting, acoustic treatment</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱1,500,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Furniture & Equipment Acquisition</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Ergonomic furniture, dual-monitor setups</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱1,100,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Software & System Installation</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">CRM, cloud storage, licenses</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱500,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Legal & Compliance</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Registration fees, consultations</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱200,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Hiring & Training (HR)</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Extensive onboarding, Agile/Scrum training</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱600,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">IT Setup & Infrastructure</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Scalable cloud storage, cybersecurity, UPS systems</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱950,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Logistics & Relocation</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Moving fees, rentals, storage</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱300,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Communication (Internal & External)</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Enhanced marketing materials, website development</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱300,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Project Management</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Consultant, tools</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱300,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Miscellaneous & Others</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Pantry, decor, perks, unforeseen expenses</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱400,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Contingency Reserve</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Permit delays, inflation, unexpected expenses</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱1,000,000</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Post-Launch Marketing</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Dedicated to the final marketing push at the end of November</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">₱150,000</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    // Clone and shuffle cards on init and shuffle action
+    let cards = shuffle(cardsRaw.slice());
 
-    <div class="buffer-modal" id="buffer-modal">
-        <div class="buffer-content">
-            <button class="close-buffer" id="close-buffer">✖</button>
-            <p>
-                Buffer time is strategically placed between critical tasks, especially before Final Office Launch (Task 22). 
-                Tasks like Risk Planning (Task 16) and Contingency Execution (Task 18) provide temporal space for managing delays. 
-                Additionally, the ₱1,000,000 contingency budget serves as a financial buffer for unforeseen challenges.
-            </p>
-        </div>
-    </div>
+    let currentIndex = 0;
+    let isFlipped = false;
+    let mode = 'practice';
+    let quizAnswered = false;
 
-    <script src="script.js"></script>
+    // Track practice backside flips
+    let practiceFlippedBacksides = new Set();
+
+    // Track practice correct/wrong: null = unattempted, true=correct, false=wrong
+    const practiceResults = new Array(cards.length).fill(null);
+
+    // Application answered status
+    const applicationAnswered = new Array(cards.length).fill(false);
+    const applicationCorrect = new Array(cards.length).fill(false);
+
+    // Updates practice status icon checkmark or X
+    function updatePracticeStatusIcon() {
+      const idxInRaw = cardsRaw.indexOf(cards[currentIndex]);
+      const result = practiceResults[idxInRaw];
+      if (result === true) {
+        statusIcon.textContent = '✔️';
+        statusIcon.className = 'status-icon correct';
+      } else if (result === false) {
+        statusIcon.textContent = '❌';
+        statusIcon.className = 'status-icon incorrect';
+      } else {
+        statusIcon.textContent = '';
+        statusIcon.className = 'status-icon';
+      }
+    }
+
+    // Render practice flashcard
+    function renderPracticeCard() {
+      const card = cards[currentIndex];
+      front.innerHTML = card.front;
+      back.innerHTML = card.back;
+      if (isFlipped) {
+        flashcard.classList.add('is-flipped');
+        flashcard.setAttribute('aria-pressed', 'true');
+        front.setAttribute('aria-hidden', 'true');
+        back.setAttribute('aria-hidden', 'false');
+        // Mark backside flipped
+        practiceFlippedBacksides.add(currentIndex);
+      } else {
+        flashcard.classList.remove('is-flipped');
+        flashcard.setAttribute('aria-pressed', 'false');
+        front.setAttribute('aria-hidden', 'false');
+        back.setAttribute('aria-hidden', 'true');
+      }
+      updatePracticeStatusIcon();
+      pageIndicator.textContent = `Practice: Card ${currentIndex + 1} / ${cards.length}`;
+    }
+
+    // Render application quiz card
+    function renderQuizCard() {
+      const card = cards[currentIndex];
+      quizQuestion.textContent = card.front;
+      quizOptions.innerHTML = '';
+      quizFeedback.textContent = '';
+      quizAnswered = false;
+
+      const optionsShuffled = shuffle([...card.options]);
+
+      optionsShuffled.forEach(option => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'quiz-option-btn';
+        btn.textContent = option;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.addEventListener('click', () => onAnswerSelected(btn, option === card.back));
+        li.appendChild(btn);
+        quizOptions.appendChild(li);
+      });
+
+      pageIndicator.textContent = `Application: Question ${currentIndex + 1} / ${cards.length}`;
+      updateApplicationProgress();
+    }
+
+    // Update application progress text
+    function updateApplicationProgress() {
+      let answeredCount = applicationAnswered.filter(a=>a).length;
+      let correctCount = applicationCorrect.filter(c=>c).length;
+      progressTracker.textContent = `Progress: ${correctCount} correct / ${answeredCount} answered`;
+    }
+
+    // Answer selected handler for application mode
+    function onAnswerSelected(button, isCorrect) {
+      if (quizAnswered) return;
+      quizAnswered = true;
+      const idxInRaw = cardsRaw.indexOf(cards[currentIndex]);
+      applicationAnswered[idxInRaw] = true;
+      applicationCorrect[idxInRaw] = isCorrect;
+      updateApplicationProgress();
+
+      // Also update practiceResults to reflect user application answer
+      if (practiceResults[idxInRaw] === null) {
+        practiceResults[idxInRaw] = isCorrect;
+        if (mode === 'practice') updatePracticeStatusIcon();
+      }
+
+      Array.from(quizOptions.children).forEach(li => {
+        const btn = li.firstElementChild;
+        btn.disabled = true;
+      });
+      if (isCorrect) {
+        button.classList.add('correct');
+        quizFeedback.textContent = 'Correct! 🎉';
+      } else {
+        button.classList.add('incorrect');
+        quizFeedback.textContent = `Oops! Correct answer: ${cards[currentIndex].back}`;
+        Array.from(quizOptions.children).forEach(li => {
+          const btn = li.firstElementChild;
+          if (btn.textContent === cards[currentIndex].back) {
+            btn.classList.add('correct');
+          }
+        });
+      }
+    }
+
+    // Shuffle cards and reset tracking
+    function shuffleCards() {
+      cards = shuffle(cardsRaw.slice());
+      currentIndex = 0;
+      isFlipped = false;
+      practiceFlippedBacksides.clear();
+      for(let i=0; i<practiceResults.length; i++) practiceResults[i] = null;
+      applicationAnswered.fill(false);
+      applicationCorrect.fill(false);
+      if (mode === 'practice') {
+        renderPracticeCard();
+      } else {
+        renderQuizCard();
+      }
+      updateApplicationProgress();
+      updatePracticeStatusIcon();
+      pageIndicator.textContent = '';
+      progressTracker.textContent = '';
+    }
+
+    // Filtered indices based on focus toggle and mode
+    function getUnansweredIndices() {
+      if (mode === 'practice') {
+        return cards.flatMap((_, i) => {
+          const idx = cardsRaw.indexOf(cards[i]);
+          return (practiceResults[idx] !== true ? [i] : []);
+        });
+      } else {
+        return cards.flatMap((_, i) => {
+          const idx = cardsRaw.indexOf(cards[i]);
+          return (!applicationAnswered[idx] ? [i] : []);
+        });
+      }
+    }
+
+    // Navigation helpers
+    function prevCard() {
+      const filteredIndices = getUnansweredIndices();
+      if (filteredIndices.length === 0) {
+        showDoneMessage();
+        return;
+      }
+      let pos = filteredIndices.indexOf(currentIndex);
+      if (pos === -1) pos = 0;
+      pos = (pos - 1 + filteredIndices.length) % filteredIndices.length;
+      currentIndex = filteredIndices[pos];
+      isFlipped = false;
+      updateDisplay();
+    }
+
+    function nextCard() {
+      const filteredIndices = getUnansweredIndices();
+      if (filteredIndices.length === 0) {
+        showDoneMessage();
+        return;
+      }
+      let pos = filteredIndices.indexOf(currentIndex);
+      if (pos === -1) pos = 0;
+      pos = (pos + 1) % filteredIndices.length;
+      currentIndex = filteredIndices[pos];
+      isFlipped = false;
+      updateDisplay();
+    }
+
+    // Flip flashcard backside in practice mode
+    function flipCard() {
+      if (mode !== 'practice') return;
+      isFlipped = !isFlipped;
+      renderPracticeCard();
+    }
+
+    // Update display depending on mode
+    function updateDisplay() {
+      if (mode === 'practice') {
+        renderPracticeCard();
+      } else {
+        renderQuizCard();
+      }
+    }
+
+    // Set practice mode
+    function setPracticeMode() {
+      mode = 'practice';
+      hideDoneMessage();
+      practiceBtn.classList.add('active');
+      practiceBtn.setAttribute('aria-selected', 'true');
+      practiceBtn.setAttribute('tabindex', '0');
+
+      applicationBtn.classList.remove('active');
+      applicationBtn.setAttribute('aria-selected', 'false');
+      applicationBtn.setAttribute('tabindex', '0');
+
+      flashcard.style.display = 'flex';
+      quizSection.setAttribute('hidden', ''); // <-- FIXED
+      isFlipped = false;
+      renderPracticeCard();
+      flipBtn.style.display = 'inline-block';
+      progressTracker.style.display = 'none';
+      updatePracticeStatusIcon();
+    }
+
+    // Set application mode
+    function setApplicationMode() {
+      mode = 'application';
+      hideDoneMessage();
+      applicationBtn.classList.add('active');
+      applicationBtn.setAttribute('aria-selected', 'true');
+      applicationBtn.setAttribute('tabindex', '0');
+
+      practiceBtn.classList.remove('active');
+      practiceBtn.setAttribute('aria-selected', 'false');
+      practiceBtn.setAttribute('tabindex', '-1');
+
+      flashcard.style.display = 'none';
+      quizSection.removeAttribute('hidden'); // <-- FIXED
+      isFlipped = false;
+      renderQuizCard();
+      flipBtn.style.display = 'none';
+      progressTracker.style.display = 'block';
+      updateApplicationProgress();
+    }
+
+    // Keyboard navigation on flashcard container
+    cardContainer.addEventListener('keydown', e => {
+      if (mode === 'practice') {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          prevCard();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          nextCard();
+        } else if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          flipCard();
+        }
+      } else if (mode === 'application') {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          prevCard();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          nextCard();
+        }
+      }
+    });
+
+    // Dark mode toggle functions
+    function updateDarkClass(isDark) {
+      if (isDark) {
+        html.classList.add('dark');
+        body.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+        body.classList.remove('dark');
+      }
+    }
+    function loadThemePreference() {
+      const saved = localStorage.getItem('flashcards-theme');
+      if (saved === 'dark') {
+        updateDarkClass(true);
+        themeToggleInput.checked = true;
+        themeToggleInput.setAttribute('aria-checked', 'true');
+      } else if (saved === 'light') {
+        updateDarkClass(false);
+        themeToggleInput.checked = false;
+        themeToggleInput.setAttribute('aria-checked', 'false');
+      } else {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+          updateDarkClass(true);
+          themeToggleInput.checked = true;
+          themeToggleInput.setAttribute('aria-checked', 'true');
+        } else {
+          updateDarkClass(false);
+          themeToggleInput.checked = false;
+          themeToggleInput.setAttribute('aria-checked', 'false');
+        }
+      }
+    }
+    function toggleTheme() {
+      if (themeToggleInput.checked) {
+        updateDarkClass(true);
+        localStorage.setItem('flashcards-theme', 'dark');
+        themeToggleInput.setAttribute('aria-checked', 'true');
+      } else {
+        updateDarkClass(false);
+        localStorage.setItem('flashcards-theme', 'light');
+        themeToggleInput.setAttribute('aria-checked', 'false');
+      }
+    }
+    themeToggleInput.addEventListener('change', toggleTheme);
+
+    // Buttons event listeners
+    practiceBtn.addEventListener('click', () => {
+      if (!practiceBtn.classList.contains('active')) {
+        setPracticeMode();
+      }
+    });
+
+    applicationBtn.addEventListener('click', () => {
+      if (!applicationBtn.classList.contains('active')) {
+        setApplicationMode();
+      }
+    });
+
+    flipBtn.addEventListener('click', flipCard);
+    prevBtn.addEventListener('click', prevCard);
+    nextBtn.addEventListener('click', nextCard);
+    flashcard.addEventListener('click', flipCard);
+
+    shuffleBtn.addEventListener('click', () => {
+      cards = shuffle(cardsRaw.slice());
+      currentIndex = 0;
+      isFlipped = false;
+      practiceFlippedBacksides.clear();
+      for(let i=0; i<practiceResults.length; i++) practiceResults[i] = null;
+      applicationAnswered.fill(false);
+      applicationCorrect.fill(false);
+      if (mode === 'practice') {
+        renderPracticeCard();
+      } else {
+        renderQuizCard();
+      }
+      updateApplicationProgress();
+      updatePracticeStatusIcon();
+      pageIndicator.textContent = '';
+      progressTracker.textContent = '';
+    });
+
+    // Show/hide done message logic
+    function showDoneMessage() {
+      flashcard.style.display = 'none';
+      quizSection.setAttribute('hidden', '');
+      doneMessage.removeAttribute('hidden');
+      // Show retry incorrect only in Application mode and if there are incorrects
+      if (mode === 'application' && applicationCorrect.includes(false)) {
+        retryIncorrectBtn.removeAttribute('hidden');
+      } else {
+        retryIncorrectBtn.setAttribute('hidden', '');
+      }
+      pageIndicator.textContent = '';
+      progressTracker.style.display = 'block';
+    }
+    function hideDoneMessage() {
+      doneMessage.setAttribute('hidden', '');
+      if (mode === 'practice') {
+        flashcard.style.display = 'flex';
+        quizSection.setAttribute('hidden', '');
+      } else {
+        flashcard.style.display = 'none';
+        quizSection.removeAttribute('hidden');
+      }
+    }
+
+    // Restart and retry logic
+    restartAllBtn.addEventListener('click', () => {
+      // Reset everything
+      cards = shuffle(cardsRaw.slice());
+      currentIndex = 0;
+      isFlipped = false;
+      practiceFlippedBacksides.clear();
+      for(let i=0; i<practiceResults.length; i++) practiceResults[i] = null;
+      applicationAnswered.fill(false);
+      applicationCorrect.fill(false);
+      hideDoneMessage();
+      if (mode === 'practice') {
+        renderPracticeCard();
+      } else {
+        renderQuizCard();
+      }
+      updateApplicationProgress();
+      updatePracticeStatusIcon();
+      pageIndicator.textContent = '';
+      progressTracker.textContent = (mode === 'application') ? '' : 'none';
+    });
+
+    retryIncorrectBtn.addEventListener('click', () => {
+      // Only retry incorrect cards in Application mode
+      if (mode !== 'application') return;
+      // Filter to only incorrect cards
+      const incorrectIndices = applicationCorrect
+        .map((correct, idx) => !correct ? idx : -1)
+        .filter(idx => idx !== -1);
+      if (incorrectIndices.length === 0) return;
+      // Rebuild cards array with only incorrects
+      cards = incorrectIndices.map(idx => cardsRaw[idx]);
+      currentIndex = 0;
+      isFlipped = false;
+      // Reset tracking for this subset
+      for(let i=0; i<cardsRaw.length; i++) {
+        applicationAnswered[i] = false;
+        applicationCorrect[i] = false;
+      }
+      hideDoneMessage();
+      renderQuizCard();
+      updateApplicationProgress();
+      pageIndicator.textContent = '';
+    });
+
+    // Update setPracticeMode and setApplicationMode to hide the done message
+    function setPracticeMode() {
+      mode = 'practice';
+      hideDoneMessage();
+      practiceBtn.classList.add('active');
+      practiceBtn.setAttribute('aria-selected', 'true');
+      practiceBtn.setAttribute('tabindex', '0');
+
+      applicationBtn.classList.remove('active');
+      applicationBtn.setAttribute('aria-selected', 'false');
+      applicationBtn.setAttribute('tabindex', '0');
+
+      flashcard.style.display = 'flex';
+      quizSection.setAttribute('hidden', '');
+      isFlipped = false;
+      renderPracticeCard();
+      flipBtn.style.display = 'inline-block';
+      progressTracker.style.display = 'none';
+      updatePracticeStatusIcon();
+    }
+
+    function setApplicationMode() {
+      mode = 'application';
+      hideDoneMessage();
+      applicationBtn.classList.add('active');
+      applicationBtn.setAttribute('aria-selected', 'true');
+      applicationBtn.setAttribute('tabindex', '0');
+
+      practiceBtn.classList.remove('active');
+      practiceBtn.setAttribute('aria-selected', 'false');
+      practiceBtn.setAttribute('tabindex', '-1');
+
+      flashcard.style.display = 'none';
+      quizSection.removeAttribute('hidden');
+      isFlipped = false;
+      renderQuizCard();
+      flipBtn.style.display = 'none';
+      progressTracker.style.display = 'block';
+      updateApplicationProgress();
+    }
+
+    // Remove focusToggle event listener and variable
+    // Remove: focusToggle.addEventListener('change', ...);
+
+    // Initialize track arrays to match cards length
+    for(let i=0; i<cards.length; i++) {
+      practiceResults[i] = null;
+      applicationAnswered[i] = false;
+      applicationCorrect[i] = false;
+    }
+
+    loadThemePreference();
+    setPracticeMode();
+    progressTracker.style.display = 'none';
+
+  })();
+</script>
 </body>
 </html>
