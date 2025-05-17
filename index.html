@@ -589,6 +589,15 @@
       padding: 0.7rem 0.5rem 1rem 0.5rem;
     }
   }
+
+  /* Add this to your <style> section */
+  .congratulations {
+    margin-top: 1rem;
+    font-weight: 700;
+    font-size: clamp(1rem, 1.2vw, 1.4rem);
+    color: #4caf50;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
@@ -597,6 +606,7 @@
     <nav class="mode-selector" role="tablist" aria-label="Select mode">
       <button class="mode-btn active" id="practice-mode-btn" role="tab" aria-selected="true" tabindex="0" aria-controls="practice">Practice</button>
       <button class="mode-btn" id="application-mode-btn" role="tab" aria-selected="false" tabindex="-1" aria-controls="application">Application</button>
+      <button class="mode-btn" id="master-mode-btn" role="tab" aria-selected="false" tabindex="-1" aria-controls="master">Master</button>
     </nav>
 
     <div class="extra-controls" aria-label="Extra controls">
@@ -614,26 +624,44 @@
   </div>
 
   <div class="flashcard-container" tabindex="0" aria-live="polite" aria-label="Flashcard interactive area" role="region" aria-atomic="true">
-    <!-- Practice flashcard -->
+    <!-- Practice section (no typing/clue UI) -->
     <div class="flashcard" id="flashcard" role="button" aria-pressed="false" tabindex="0" aria-label="Flashcard, click or press enter to flip">
       <div class="flashcard__front" id="card-front" aria-hidden="false"></div>
       <div class="flashcard__back" id="card-back" aria-hidden="true"></div>
-      <div class="status-icon" id="status-icon" aria-live="polite" aria-label="Answer status"></div>
+      <div class="status-icon" id="status-icon"></div>
     </div>
 
-    <!-- Application quiz (hidden by default) -->
+    <!-- Application section (no typing/clue UI) -->
     <section id="quiz-section" hidden>
-      <div class="quiz-question" id="quiz-question" tabindex="0"></div>
-      <ul class="quiz-options" id="quiz-options" role="list"></ul>
-      <div class="feedback" id="quiz-feedback" aria-live="polite" role="alert"></div>
+      <div class="quiz-question" id="quiz-question"></div>
+      <ul class="quiz-options" id="quiz-options"></ul>
+      <div class="feedback" id="quiz-feedback"></div>
+      <div class="congratulations" id="congratulations-message" style="display: none;"></div>
+    </section>
+
+    <!-- Master section (ONLY here: typing, submit, clue, password) -->
+    <section id="master-section" hidden>
+      <div class="quiz-question" id="master-question"></div>
+      <input type="text" id="master-input" autocomplete="off" style="width: 90%; font-size: 1.1rem; padding: 0.5rem; border-radius: 0.7rem; border: 1.5px solid #ccc; margin: 1rem 0 0.5rem 0;">
+      <button id="master-submit" class="extra-btn" style="margin-left:0.5rem;">Submit</button>
+      <button id="master-clue" class="extra-btn" style="margin-left:0.5rem;">Show Clue</button>
+      <input type="password" id="clue-password" placeholder="Password for clue" style="margin-left:0.5rem; width: 140px; font-size: 1rem; border-radius: 0.7rem; border: 1.5px solid #ccc;">
+      <span id="master-clue-text" style="display:inline-block; margin-left:0.7rem; font-weight:700; color:#b57f00;"></span>
+      <div class="feedback" id="master-feedback" aria-live="polite" role="alert"></div>
     </section>
   </div>
 
-  <!-- Add this after the flashcard-container, before .flashcards-navigation -->
+  <!-- Replace the done message with a personalized one for Ian -->
   <div id="done-message" hidden style="text-align:center; margin:2rem 0;">
-    <div style="font-size:1.5rem; font-weight:700; margin-bottom:1rem;">🎉 You’re done!</div>
-    <button id="restart-all-btn" class="extra-btn" style="margin:0.5rem;">Restart All</button>
-    <button id="retry-incorrect-btn" class="extra-btn" style="margin:0.5rem;" hidden>Retry Incorrect</button>
+    <div style="font-size:1.5rem; font-weight:700; margin-bottom:1rem;">
+      🎉 Great job, Ian! You finished all the cards!
+    </div>
+    <button id="restart-all-btn" class="extra-btn" style="margin:0.5rem;">
+      Restart All for Ian
+    </button>
+    <button id="retry-incorrect-btn" class="extra-btn" style="margin:0.5rem;" hidden>
+      Review Ian's Incorrect Answers
+    </button>
   </div>
 
   <div class="flashcards-navigation" role="navigation" aria-label="Flashcard navigation">
@@ -644,6 +672,19 @@
 
   <div id="progress-tracker" aria-live="polite" aria-atomic="true" style="margin-top:0.8rem; font-weight:700; font-size:1rem; color: var(--text-color);"></div>
   <div class="page-indicator" id="page-indicator" aria-live="polite"></div>
+
+  <div class="music-player" id="music-player" style="position: absolute; right: 1.5rem; bottom: 2.5rem; z-index: 10; display: flex; align-items: center; gap: 0.5rem; background: var(--card-bg); border-radius: 2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); padding: 0.4rem 1rem; min-width: 0;">
+    <button id="music-prev" title="Previous" style="background: none; border: none; cursor: pointer; font-size: 1.3rem; color: var(--button-color); padding: 0.2rem;">
+      <span aria-label="Previous">&#9198;</span>
+    </button>
+    <button id="music-play" title="Play/Pause" style="background: none; border: none; cursor: pointer; font-size: 1.3rem; color: var(--button-color); padding: 0.2rem;">
+      <span id="music-play-icon" aria-label="Play">&#9654;</span>
+    </button>
+    <button id="music-next" title="Next" style="background: none; border: none; cursor: pointer; font-size: 1.3rem; color: var(--button-color); padding: 0.2rem;">
+      <span aria-label="Next">&#9197;</span>
+    </button>
+    <span id="music-title" style="font-size: 0.98rem; font-weight: 700; color: var(--button-color); margin-left: 0.5rem; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
+  </div>
 </main>
 
 <script>
@@ -692,70 +733,103 @@
 
     // Data and state
     let cardsRaw = [
-      {
-        front: 'What is the capital of France?',
-        back: 'Paris',
-        options: ['Paris', 'Rome', 'Madrid', 'Berlin']
-      },
-      {
-        front: 'What is the tallest mountain in the world?',
-        back: 'Mount Everest',
-        options: ['K2', 'Mount Kilimanjaro', 'Mount Everest', 'Mount Elbrus']
-      },
-      {
-        front: 'What is the chemical symbol for water?',
-        back: 'H₂O',
-        options: ['CO2', 'H₂O', 'HO', 'O2']
-      },
-      {
-        front: 'Who wrote "Romeo and Juliet"?',
-        back: 'William Shakespeare',
-        options: ['William Shakespeare', 'Mark Twain', 'Jane Austen', 'Charles Dickens']
-      },
-      {
-        front: 'What is the speed of light?',
-        back: 'Approximately 299,792 km per second',
-        options: [
-          'Approximately 150,000 km per second',
-          'Approximately 299,792 km per second',
-          'Approximately 500,000 km per second',
-          'Approximately 1,000,000 km per second'
-        ]
-      },
-      {
-        front: 'In which year did the Apollo 11 moon landing occur?',
-        back: '1969',
-        options: ['1965', '1969', '1972', '1959']
-      },
-      {
-        front: 'What is the formula for the area of a circle?',
-        back: 'A = πr²',
-        options: ['A = 2πr', 'A = πr²', 'A = πd', 'A = r²']
-      },
-      {
-        front: 'Who painted the Mona Lisa?',
-        back: 'Leonardo da Vinci',
-        options: ['Michelangelo', 'Leonardo da Vinci', 'Raphael', 'Donatello']
-      },
-      {
-        front: 'What is the largest organ in the human body?',
-        back: 'The skin',
-        options: ['The brain', 'The heart', 'The skin', 'The lungs']
-      },
-      {
-        front: 'What currency is used in Japan?',
-        back: 'Japanese Yen (¥)',
-        options: ['US Dollar ($)', 'Euro (€)', 'Japanese Yen (¥)', 'British Pound (£)']
-      }
+      { front: "number of wavelengths that pass by a point each second.", back: "Frequency" },
+      { front: "people are usually able to hear.", back: "20hz-20,000 hz" },
+      { front: "What are the Heat transfer?", back: "Conduction, Convection, Radiation" },
+      { front: "Collision between atoms or molecule?", back: "Conduction" },
+      { front: "Bulk movement of matter from one to another.", back: "Convection" },
+      { front: "Transmission of energy through light.", back: "Radiation" },
+      { front: "Degree of HOTNESS of a substance, indicates direction of flow of hotness (hot to cold).", back: "Temperature" },
+      { front: "Transferred between bodies that results to temperature gradient.", back: "thermal energy JOULES (J)" },
+      { front: "Referred to as heat and High temperature is not same with high heat.", back: "Thermal energy" },
+      { front: "State w/no net transfer; temperature is equal.", back: "Thermal equilibrium" },
+      { front: "Mercury or alcohol-based thermometer n bi-metal.", back: "Thermometers" },
+      { front: "Distance between one point on a wave and the nearest point moving with same speed and direction.", back: "Wavelength" },
+      { front: "Usually produced by something moving back and forth or vibrating.", back: "waves" },
+      { front: "2 types of waves.", back: "mechanical waves n electromagnetic waves" },
+      { front: "Can travel only through matter; water, seismic, sound.", back: "mechanical waves" },
+      { front: "Can travel through matter or empty space.", back: "electromagnetic waves" },
+      { front: "2 types of mechanical waves.", back: "transverse n compressional" },
+      { front: "Compressional waves move?", back: "parallel" },
+      { front: "Transverse moves?", back: "perpendicular" },
+      { front: "Particles in matter move back and forth at right angles where the wave travels.", back: "transverse" },
+      { front: "High point is crest and low point is troughs.", back: "transverse" },
+      { front: "Energy moves constantly to the right while the media moves left n right.", back: "compressional" },
+      { front: "Particles in matter move back and forth along same direction where the wave travel.", back: "wave" },
+      { front: "Wave places where coils are squeezed are _?", back: "compressions" },
+      { front: "Places of spread are rarefactions.", back: "refraction" },
+      { front: "Series of rarefactions form a compressional wave during _ ? Seismic wave move through the ground where some are compressional and some are transverse, but _? (during earthquake n transverse causes more damage)", back: "during earthquake n transverse causes more damage" },
+      { front: "Ex: light, radio waves, microwaves, infrared rays and x-rays considered as?", back: "electromagnetic waves" },
+      { front: "Line that makes 90° with a surface.", back: "normal surface" },
+      { front: "Angle that the incoming wave makes with the normal equals the angle that the outgoing wave makes with the normal.", back: "law of reflection" },
+      { front: "Bouncing back of wave when meets a surface or boundary that doesn’t absorb the entire wave's energy.", back: "reflection" },
+      { front: "Bending of waves caused by change of speed from passing one medium to another.", back: "refraction" },
+      { front: "Refraction of light going from air through what?", back: "convex lens" },
+      { front: "Wavelength of sound waves are similar to objects around you, but 'wavelengths of light wave are shorter'.", back: "diffraction of sound n light" },
+      { front: "This results in you hearing people talking in the next room with an open door even though you can't see them.", back: "diffraction of sound n light" },
+      { front: "When waves pass through a given point or medium.", back: "transmission" },
+      { front: "No light waves to be transmitted through them.", back: "opaque" },
+      { front: "Transmit some light but cause it to be scattered, so no clear image.", back: "translucent" },
+      { front: "Objects that absorb wavelength of electromagnetic radiation become 'warmer and convert' it to 'infrared radiation'.", back: "absorption" },
+      { front: "It occurs when energy is not transferred through, or reflected by, a given medium.", back: "absorption" },
+      { front: "Amount of energy that a wave carries past a certain area each second.", back: "intensity" },
+      { front: "It is related to amplitude and sound with greater amplitude has a greater _?", back: "intensity" },
+      { front: "ECHOES are sounds that reflect off surface, repeated echoes is REVERBERATION.", back: "reflection of sounds" },
+      { front: "ECHOES are sounds that reflect off surface, repeated echoes is _?", back: "reverberation" },
+      { front: "What is the speed of light?", back: "300,000 km/s." },
+      { front: "Give me the date and name that is related to this: accidentally found a connection between the, AN ELECTRIC CURRENT IN A WIRE CAN DEFLECT MAGNETIC COMPASS NEEDLE.", back: "1820, Hanz Christian Oerstied" },
+      { front: "New science of electromagnetism.", back: "Michael Faraday" },
+      { front: "Put Faraday's idea to math and introduced many ideas and put electromagnetism on a sound theoretical basis.", back: "James Clerk Maxwell" },
+      { front: "Contributed to the clarification of Maxwell’s theory.", back: "Oiver Heaviside n H.A Lorentz" },
+      { front: "Great step forward when more than 20 years after Maxwell theory, he produced in the lab electromagnetic.", back: "Heinrich Herts" },
+      { front: "That we now call RADIO WAVES.", back: "Maxwellian waves" },
+      { front: "Developed practical applications of electromagnetic waves of Maxwell and Hertz.", back: "Gugleilmo Marconi" },
+      { front: "Based his theory of relativity on Maxwell's equation.", back: "Albert Einstein" },
+      { front: "Charge of the same sign repel and opposite sign attracts.", back: "Benjamin Franklin" },
+      { front: "Charge of the same sign repel and opposite sign attracts.", back: "Charles De Coulomb" },
+      { front: "Basic property of matter carried by some elementary particles that governs how the particles are affected by an electric or magnetic field.", back: "Electric Charge" },
+      { front: "Can be positive or negative.", back: "electric charge" },
+      { front: "Have Positive charge +1.60x10-19 coulomb.", back: "proton" },
+      { front: "Have 0 when electrical balance is disturbed.", back: "neutrons" },
+      { front: "Where charges can easily flow through ex. Tap water, human body and metals.", back: "conductors" },
+      { front: "Inhibit the flow of charges, stay where they are put. Ex. Glass, chemically pure water and plastics.", back: "insulators" },
+      { front: "It is the negative charges that are free to move.", back: "hall effect" },
+      { front: "Outer electron that don’t remain attached to the individual atoms of material but free to wander.", back: "conduction/free electrons" },
+      { front: "Germanium and silicon are intermediate between conductors and insulators.", back: "semiconductors" },
+      { front: "Semiconductors: their outermost valence electron has?", back: "4" },
+      { front: "Study of behavior of fluid at rest or in motion.", back: "fluid mechanics" },
+      { front: "Can be LIQUID or GASSES.", back: "fluid mechanics" },
+      { front: "Can be LIQUID or GASSES.", back: "fluid" },
+      { front: "Slightly compressible, viscous.", back: "liquids" },
+      { front: "Highly compressible, less viscous.", back: "gas" },
+      { front: "Ability of material to resist a deforming or distorting influence and to return to its original size.", back: "elasticity" },
+      { front: "What is the opposite of elasticity?", back: "plasticity" },
+      { front: "Elongation?", back: "stretch" },
+      { front: "Compression?", back: "shrink" },
+      { front: "Torsion?", back: "twist" },
+      { front: "Flexion?", back: "bend" },
+      { front: "Cause of deformation?", back: "stress" }
     ];
+
+    // Generate confusing options for application mode
+    function generateOptions(card, allCards) {
+      // Always include the correct answer
+      const correct = card.back;
+      // Gather all possible answers except the correct one
+      const pool = allCards.map(c => c.back).filter(ans => ans !== correct);
+      // Pick 3 random distractors
+      const distractors = shuffle(pool).slice(0, 3);
+      // Shuffle correct + distractors
+      return shuffle([correct, ...distractors]);
+    }
 
     // Clone and shuffle cards on init and shuffle action
     let cards = shuffle(cardsRaw.slice());
 
-    let currentIndex = 0;
+    let currentPracticeIndex = 0;
+    let currentApplicationIndex = 0;
+    let currentMasterIndex = 0;
     let isFlipped = false;
-    let mode = 'practice';
-    let quizAnswered = false;
 
     // Track practice backside flips
     let practiceFlippedBacksides = new Set();
@@ -769,7 +843,7 @@
 
     // Updates practice status icon checkmark or X
     function updatePracticeStatusIcon() {
-      const idxInRaw = cardsRaw.indexOf(cards[currentIndex]);
+      const idxInRaw = cardsRaw.indexOf(cards[currentPracticeIndex]);
       const result = practiceResults[idxInRaw];
       if (result === true) {
         statusIcon.textContent = '✔️';
@@ -785,7 +859,7 @@
 
     // Render practice flashcard
     function renderPracticeCard() {
-      const card = cards[currentIndex];
+      const card = cards[currentPracticeIndex];
       front.innerHTML = card.front;
       back.innerHTML = card.back;
       if (isFlipped) {
@@ -794,7 +868,7 @@
         front.setAttribute('aria-hidden', 'true');
         back.setAttribute('aria-hidden', 'false');
         // Mark backside flipped
-        practiceFlippedBacksides.add(currentIndex);
+        practiceFlippedBacksides.add(currentPracticeIndex);
       } else {
         flashcard.classList.remove('is-flipped');
         flashcard.setAttribute('aria-pressed', 'false');
@@ -802,19 +876,17 @@
         back.setAttribute('aria-hidden', 'true');
       }
       updatePracticeStatusIcon();
-      pageIndicator.textContent = `Practice: Card ${currentIndex + 1} / ${cards.length}`;
+      pageIndicator.textContent = `Practice: Card ${currentPracticeIndex + 1} / ${cards.length}`;
     }
 
     // Render application quiz card
     function renderQuizCard() {
-      const card = cards[currentIndex];
+      const card = cards[currentApplicationIndex];
       quizQuestion.textContent = card.front;
       quizOptions.innerHTML = '';
       quizFeedback.textContent = '';
-      quizAnswered = false;
-
-      const optionsShuffled = shuffle([...card.options]);
-
+      quizAnswered = applicationAnswered[cardsRaw.indexOf(card)];
+      const optionsShuffled = generateOptions(card, cardsRaw);
       optionsShuffled.forEach(option => {
         const li = document.createElement('li');
         const btn = document.createElement('button');
@@ -822,74 +894,126 @@
         btn.className = 'quiz-option-btn';
         btn.textContent = option;
         btn.setAttribute('aria-pressed', 'false');
+        btn.disabled = quizAnswered;
         btn.addEventListener('click', () => onAnswerSelected(btn, option === card.back));
         li.appendChild(btn);
         quizOptions.appendChild(li);
       });
-
-      pageIndicator.textContent = `Application: Question ${currentIndex + 1} / ${cards.length}`;
-      updateApplicationProgress();
-    }
-
-    // Update application progress text
-    function updateApplicationProgress() {
-      let answeredCount = applicationAnswered.filter(a=>a).length;
-      let correctCount = applicationCorrect.filter(c=>c).length;
-      progressTracker.textContent = `Progress: ${correctCount} correct / ${answeredCount} answered`;
-    }
-
-    // Answer selected handler for application mode
-    function onAnswerSelected(button, isCorrect) {
-      if (quizAnswered) return;
-      quizAnswered = true;
-      const idxInRaw = cardsRaw.indexOf(cards[currentIndex]);
-      applicationAnswered[idxInRaw] = true;
-      applicationCorrect[idxInRaw] = isCorrect;
-      updateApplicationProgress();
-
-      // Also update practiceResults to reflect user application answer
-      if (practiceResults[idxInRaw] === null) {
-        practiceResults[idxInRaw] = isCorrect;
-        if (mode === 'practice') updatePracticeStatusIcon();
-      }
-
-      Array.from(quizOptions.children).forEach(li => {
-        const btn = li.firstElementChild;
-        btn.disabled = true;
-      });
-      if (isCorrect) {
-        button.classList.add('correct');
-        quizFeedback.textContent = 'Correct! 🎉';
-      } else {
-        button.classList.add('incorrect');
-        quizFeedback.textContent = `Oops! Correct answer: ${cards[currentIndex].back}`;
+      // If already answered, show feedback and highlight
+      if (quizAnswered) {
+        const idxInRaw = cardsRaw.indexOf(card);
+        const correct = card.back;
         Array.from(quizOptions.children).forEach(li => {
           const btn = li.firstElementChild;
-          if (btn.textContent === cards[currentIndex].back) {
+          if (btn.textContent === correct) {
             btn.classList.add('correct');
           }
+          if (applicationCorrect[idxInRaw] === false && btn.textContent !== correct && btn.classList.contains('quiz-option-btn')) {
+            btn.classList.add('incorrect');
+          }
         });
+        quizFeedback.textContent = applicationCorrect[idxInRaw] ? 'Correct! 🎉' : `Oops! Correct answer: ${card.back}`;
       }
+      pageIndicator.textContent = `Application: Question ${currentApplicationIndex + 1} / ${cards.length}`;
+      updateApplicationProgress();
     }
 
-    // Shuffle cards and reset tracking
-    function shuffleCards() {
-      cards = shuffle(cardsRaw.slice());
-      currentIndex = 0;
-      isFlipped = false;
-      practiceFlippedBacksides.clear();
-      for(let i=0; i<practiceResults.length; i++) practiceResults[i] = null;
-      applicationAnswered.fill(false);
-      applicationCorrect.fill(false);
-      if (mode === 'practice') {
-        renderPracticeCard();
-      } else {
-        renderQuizCard();
+    // Top bar mode navigation (including master mode)
+    const masterBtn = document.getElementById('master-mode-btn');
+    const masterSection = document.getElementById('master-section');
+    const masterQuestion = document.getElementById('master-question');
+    const masterInput = document.getElementById('master-input');
+    const masterSubmit = document.getElementById('master-submit');
+    const masterFeedback = document.getElementById('master-feedback');
+    const masterClueBtn = document.getElementById('master-clue');
+    const masterClueText = document.getElementById('master-clue-text');
+    const cluePassword = document.getElementById('clue-password');
+    let clueLength = 0;
+
+    // Track answers for master mode
+    const masterAnswered = new Array(cardsRaw.length).fill(false);
+    const masterCorrect = new Array(cardsRaw.length).fill(false);
+
+    function setMasterMode() {
+      mode = 'master';
+      hideDoneMessage();
+      masterBtn.classList.add('active');
+      practiceBtn.classList.remove('active');
+      applicationBtn.classList.remove('active');
+      flashcard.style.display = 'none';
+      quizSection.setAttribute('hidden', '');
+      masterSection.removeAttribute('hidden'); // <--- SHOW MASTER
+      flipBtn.style.display = 'none';
+      progressTracker.style.display = 'block';
+      renderMasterCard();
+      updateMasterProgress();
+    }
+
+    masterBtn.addEventListener('click', () => {
+      if (!masterBtn.classList.contains('active')) setMasterMode();
+    });
+
+    function renderMasterCard() {
+      const card = cards[currentMasterIndex];
+      masterQuestion.textContent = card.front;
+      masterInput.value = '';
+      masterInput.disabled = false;
+      masterSubmit.disabled = false;
+      masterFeedback.textContent = '';
+      clueLength = 0;
+      masterClueText.textContent = '';
+      masterClueBtn.disabled = false;
+      cluePassword.value = '';
+      cluePassword.disabled = false;
+      masterInput.focus();
+      pageIndicator.textContent = `Master: Question ${currentMasterIndex + 1} / ${cards.length}`;
+      updateMasterProgress();
+    }
+
+    masterClueBtn.addEventListener('click', () => {
+      if (cluePassword.value !== "JHUSTYNPOGI") {
+        masterClueText.textContent = "Wrong password!";
+        masterClueText.style.color = "#c62828";
+        return;
       }
-      updateApplicationProgress();
-      updatePracticeStatusIcon();
-      pageIndicator.textContent = '';
-      progressTracker.textContent = '';
+      const card = cards[currentMasterIndex];
+      const answer = card.back.trim();
+      clueLength = Math.min(clueLength + 1, answer.length);
+      masterClueText.style.color = "#b57f00";
+      masterClueText.textContent = answer.slice(0, clueLength) + '_'.repeat(answer.length - clueLength);
+      if (clueLength === answer.length) masterClueBtn.disabled = true;
+    });
+
+    function onMasterSubmit() {
+      const card = cards[currentMasterIndex];
+      const userAnswer = masterInput.value.trim();
+      const correct = card.back.trim();
+      masterAnswered[cardsRaw.indexOf(card)] = true;
+      if (userAnswer.toLowerCase() === correct.toLowerCase()) {
+        masterCorrect[cardsRaw.indexOf(card)] = true;
+        masterFeedback.textContent = "Correct! 🎉";
+        masterFeedback.style.color = "#4caf50";
+      } else {
+        masterCorrect[cardsRaw.indexOf(card)] = false;
+        masterFeedback.textContent = `Incorrect. Correct answer: ${correct}`;
+        masterFeedback.style.color = "#c62828";
+      }
+      masterInput.disabled = true;
+      masterSubmit.disabled = true;
+      masterClueBtn.disabled = true;
+      cluePassword.disabled = true;
+      updateMasterProgress();
+    }
+
+    masterSubmit.addEventListener('click', onMasterSubmit);
+    masterInput.addEventListener('keydown', e => {
+      if (e.key === "Enter") onMasterSubmit();
+    });
+
+    function updateMasterProgress() {
+      let answeredCount = masterAnswered.filter(a=>a).length;
+      let correctCount = masterCorrect.filter(c=>c).length;
+      progressTracker.textContent = `Progress: ${correctCount} correct / ${answeredCount} answered`;
     }
 
     // Filtered indices based on focus toggle and mode
@@ -899,41 +1023,50 @@
           const idx = cardsRaw.indexOf(cards[i]);
           return (practiceResults[idx] !== true ? [i] : []);
         });
-      } else {
+      } else if (mode === 'application') {
         return cards.flatMap((_, i) => {
           const idx = cardsRaw.indexOf(cards[i]);
           return (!applicationAnswered[idx] ? [i] : []);
+        });
+      } else {
+        return cards.flatMap((_, i) => {
+          const idx = cardsRaw.indexOf(cards[i]);
+          return (!masterAnswered[idx] ? [i] : []);
         });
       }
     }
 
     // Navigation helpers
     function prevCard() {
-      const filteredIndices = getUnansweredIndices();
-      if (filteredIndices.length === 0) {
-        showDoneMessage();
+      if (mode === 'application') {
+        currentApplicationIndex = (currentApplicationIndex - 1 + cards.length) % cards.length;
+        renderQuizCard();
         return;
       }
-      let pos = filteredIndices.indexOf(currentIndex);
-      if (pos === -1) pos = 0;
-      pos = (pos - 1 + filteredIndices.length) % filteredIndices.length;
-      currentIndex = filteredIndices[pos];
+      if (mode === 'master') {
+        currentMasterIndex = (currentMasterIndex - 1 + cards.length) % cards.length;
+        renderMasterCard();
+        return;
+      }
+      currentPracticeIndex = (currentPracticeIndex - 1 + cards.length) % cards.length;
       isFlipped = false;
-      updateDisplay();
+      renderPracticeCard();
     }
 
     function nextCard() {
-      const filteredIndices = getUnansweredIndices();
-      if (filteredIndices.length === 0) {
-        showDoneMessage();
+      if (mode === 'application') {
+        currentApplicationIndex = (currentApplicationIndex + 1) % cards.length;
+        renderQuizCard();
         return;
       }
-      let pos = filteredIndices.indexOf(currentIndex);
-      if (pos === -1) pos = 0;
-      pos = (pos + 1) % filteredIndices.length;
-      currentIndex = filteredIndices[pos];
+      if (mode === 'master') {
+        currentMasterIndex = (currentMasterIndex + 1) % cards.length;
+        renderMasterCard();
+        return;
+      }
+      currentPracticeIndex = (currentPracticeIndex + 1) % cards.length;
       isFlipped = false;
-      updateDisplay();
+      renderPracticeCard();
     }
 
     // Flip flashcard backside in practice mode
@@ -947,8 +1080,10 @@
     function updateDisplay() {
       if (mode === 'practice') {
         renderPracticeCard();
-      } else {
+      } else if (mode === 'application') {
         renderQuizCard();
+      } else {
+        renderMasterCard();
       }
     }
 
@@ -957,19 +1092,14 @@
       mode = 'practice';
       hideDoneMessage();
       practiceBtn.classList.add('active');
-      practiceBtn.setAttribute('aria-selected', 'true');
-      practiceBtn.setAttribute('tabindex', '0');
-
       applicationBtn.classList.remove('active');
-      applicationBtn.setAttribute('aria-selected', 'false');
-      applicationBtn.setAttribute('tabindex', '0');
-
+      masterBtn.classList.remove('active');
       flashcard.style.display = 'flex';
-      quizSection.setAttribute('hidden', ''); // <-- FIXED
-      isFlipped = false;
-      renderPracticeCard();
+      quizSection.setAttribute('hidden', '');
+      masterSection.setAttribute('hidden', ''); // <--- HIDE MASTER
       flipBtn.style.display = 'inline-block';
       progressTracker.style.display = 'none';
+      renderPracticeCard();
       updatePracticeStatusIcon();
     }
 
@@ -978,19 +1108,67 @@
       mode = 'application';
       hideDoneMessage();
       applicationBtn.classList.add('active');
-      applicationBtn.setAttribute('aria-selected', 'true');
-      applicationBtn.setAttribute('tabindex', '0');
-
       practiceBtn.classList.remove('active');
-      practiceBtn.setAttribute('aria-selected', 'false');
-      practiceBtn.setAttribute('tabindex', '-1');
-
+      masterBtn.classList.remove('active');
       flashcard.style.display = 'none';
-      quizSection.removeAttribute('hidden'); // <-- FIXED
-      isFlipped = false;
-      renderQuizCard();
+      quizSection.removeAttribute('hidden');
+      masterSection.setAttribute('hidden', ''); // <--- HIDE MASTER
       flipBtn.style.display = 'none';
       progressTracker.style.display = 'block';
+      renderQuizCard();
+      updateApplicationProgress();
+    }
+
+    // Set master mode
+    function setMasterMode() {
+      mode = 'master';
+      hideDoneMessage();
+      masterBtn.classList.add('active');
+      practiceBtn.classList.remove('active');
+      applicationBtn.classList.remove('active');
+      flashcard.style.display = 'none';
+      quizSection.setAttribute('hidden', '');
+      masterSection.removeAttribute('hidden'); // <--- SHOW MASTER
+      flipBtn.style.display = 'none';
+      progressTracker.style.display = 'block';
+      renderMasterCard();
+      updateMasterProgress();
+    }
+
+    // Place this inside your main IIFE, after renderQuizCard() and before any navigation code
+    function onAnswerSelected(button, isCorrect) {
+      if (button.disabled) return; // Prevent double-clicks
+
+      const idxInRaw = cardsRaw.indexOf(cards[currentApplicationIndex]);
+      applicationAnswered[idxInRaw] = true;
+      applicationCorrect[idxInRaw] = isCorrect;
+
+      // Disable all options
+      Array.from(quizOptions.children).forEach(li => {
+        const btn = li.firstElementChild;
+        btn.disabled = true;
+      });
+
+      // Show feedback and congratulations
+      const congratulationsMessage = document.getElementById('congratulations-message');
+      if (isCorrect) {
+        button.classList.add('correct');
+        quizFeedback.textContent = 'Correct! 🎉';
+        congratulationsMessage.textContent = "Congratulations! You've got it right! 🎉";
+        congratulationsMessage.style.display = 'block';
+      } else {
+        button.classList.add('incorrect');
+        quizFeedback.textContent = `Oops! Correct answer: ${cards[currentApplicationIndex].back}`;
+        Array.from(quizOptions.children).forEach(li => {
+          const btn = li.firstElementChild;
+          if (btn.textContent === cards[currentApplicationIndex].back) {
+            btn.classList.add('correct');
+          }
+        });
+        congratulationsMessage.style.display = 'none';
+      }
+
+      // Update progress after answering
       updateApplicationProgress();
     }
 
@@ -1008,6 +1186,14 @@
           flipCard();
         }
       } else if (mode === 'application') {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          prevCard();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          nextCard();
+        }
+      } else if (mode === 'master') {
         if (e.key === 'ArrowLeft') {
           e.preventDefault();
           prevCard();
@@ -1084,7 +1270,9 @@
 
     shuffleBtn.addEventListener('click', () => {
       cards = shuffle(cardsRaw.slice());
-      currentIndex = 0;
+      currentPracticeIndex = 0;
+      currentApplicationIndex = 0;
+      currentMasterIndex = 0;
       isFlipped = false;
       practiceFlippedBacksides.clear();
       for(let i=0; i<practiceResults.length; i++) practiceResults[i] = null;
@@ -1130,7 +1318,9 @@
     restartAllBtn.addEventListener('click', () => {
       // Reset everything
       cards = shuffle(cardsRaw.slice());
-      currentIndex = 0;
+      currentPracticeIndex = 0;
+      currentApplicationIndex = 0;
+      currentMasterIndex = 0;
       isFlipped = false;
       practiceFlippedBacksides.clear();
       for(let i=0; i<practiceResults.length; i++) practiceResults[i] = null;
@@ -1158,7 +1348,9 @@
       if (incorrectIndices.length === 0) return;
       // Rebuild cards array with only incorrects
       cards = incorrectIndices.map(idx => cardsRaw[idx]);
-      currentIndex = 0;
+      currentPracticeIndex = 0;
+      currentApplicationIndex = 0;
+      currentMasterIndex = 0;
       isFlipped = false;
       // Reset tracking for this subset
       for(let i=0; i<cardsRaw.length; i++) {
@@ -1176,19 +1368,14 @@
       mode = 'practice';
       hideDoneMessage();
       practiceBtn.classList.add('active');
-      practiceBtn.setAttribute('aria-selected', 'true');
-      practiceBtn.setAttribute('tabindex', '0');
-
       applicationBtn.classList.remove('active');
-      applicationBtn.setAttribute('aria-selected', 'false');
-      applicationBtn.setAttribute('tabindex', '0');
-
+      masterBtn.classList.remove('active');
       flashcard.style.display = 'flex';
       quizSection.setAttribute('hidden', '');
-      isFlipped = false;
-      renderPracticeCard();
+      masterSection.setAttribute('hidden', ''); // <--- HIDE MASTER
       flipBtn.style.display = 'inline-block';
       progressTracker.style.display = 'none';
+      renderPracticeCard();
       updatePracticeStatusIcon();
     }
 
@@ -1196,19 +1383,14 @@
       mode = 'application';
       hideDoneMessage();
       applicationBtn.classList.add('active');
-      applicationBtn.setAttribute('aria-selected', 'true');
-      applicationBtn.setAttribute('tabindex', '0');
-
       practiceBtn.classList.remove('active');
-      practiceBtn.setAttribute('aria-selected', 'false');
-      practiceBtn.setAttribute('tabindex', '-1');
-
+      masterBtn.classList.remove('active');
       flashcard.style.display = 'none';
       quizSection.removeAttribute('hidden');
-      isFlipped = false;
-      renderQuizCard();
+      masterSection.setAttribute('hidden', ''); // <--- HIDE MASTER
       flipBtn.style.display = 'none';
       progressTracker.style.display = 'block';
+      renderQuizCard();
       updateApplicationProgress();
     }
 
@@ -1227,6 +1409,75 @@
     progressTracker.style.display = 'none';
 
   })();
+
+  // --- Minimalist Music Player for Ian ---
+  // Place your music files in the same folder or use URLs
+  const musicTracks = [
+    { title: "Autumn", src: "autumn.mp3" },
+    { title: "Multo", src: "multo.mp3" },
+    { title: "Apartment", src: "apartment.mp3" },
+    { title: "Love", src: "love.mp3" } // <-- Added your new song here
+  ];
+  let currentTrack = 0;
+  let isPlaying = false;
+  const audio = new Audio();
+  audio.preload = "auto";
+  audio.loop = false;
+
+  const musicPlayer = document.getElementById('music-player');
+  const musicPlayBtn = document.getElementById('music-play');
+  const musicPlayIcon = document.getElementById('music-play-icon');
+  const musicPrevBtn = document.getElementById('music-prev');
+  const musicNextBtn = document.getElementById('music-next');
+  const musicTitle = document.getElementById('music-title');
+
+  function loadTrack(idx) {
+    currentTrack = idx;
+    audio.src = musicTracks[currentTrack].src;
+    musicTitle.textContent = musicTracks[currentTrack].title;
+  }
+  function playPauseMusic() {
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      audio.play();
+    }
+  }
+  function playTrack(idx) {
+    loadTrack(idx);
+    audio.play();
+  }
+  musicPlayBtn.addEventListener('click', playPauseMusic);
+  musicPrevBtn.addEventListener('click', () => {
+    let idx = (currentTrack - 1 + musicTracks.length) % musicTracks.length;
+    playTrack(idx);
+  });
+  musicNextBtn.addEventListener('click', () => {
+    let idx = (currentTrack + 1) % musicTracks.length;
+    playTrack(idx);
+  });
+  audio.addEventListener('play', () => {
+    isPlaying = true;
+    musicPlayIcon.textContent = '❚❚';
+    musicPlayIcon.setAttribute('aria-label', 'Pause');
+  });
+  audio.addEventListener('pause', () => {
+    isPlaying = false;
+    musicPlayIcon.textContent = '▶';
+    musicPlayIcon.setAttribute('aria-label', 'Play');
+  });
+  audio.addEventListener('ended', () => {
+    // Auto-next
+    let idx = (currentTrack + 1) % musicTracks.length;
+    playTrack(idx);
+  });
+
+  // Initialize
+  loadTrack(0);
+
+  // Optionally: Hide player on mobile if you want
+  // ...existing code...
 </script>
 </body>
 </html>
+
