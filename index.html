@@ -914,6 +914,8 @@
         });
         quizFeedback.textContent = applicationCorrect[idxInRaw] ? 'Correct! 🎉' : `Oops! Correct answer: ${card.back}`;
       }
+      const congratulationsMessage = document.getElementById('congratulations-message');
+      if (congratulationsMessage) congratulationsMessage.style.display = 'none';
       pageIndicator.textContent = `Application: Question ${currentApplicationIndex + 1} / ${cards.length}`;
       updateApplicationProgress();
     }
@@ -1149,13 +1151,12 @@
         btn.disabled = true;
       });
 
-      // Show feedback and congratulations
+      // Show feedback only, no congratulations message
       const congratulationsMessage = document.getElementById('congratulations-message');
       if (isCorrect) {
         button.classList.add('correct');
         quizFeedback.textContent = 'Correct! 🎉';
-        congratulationsMessage.textContent = "Congratulations! You've got it right! 🎉";
-        congratulationsMessage.style.display = 'block';
+        if (congratulationsMessage) congratulationsMessage.style.display = 'none';
       } else {
         button.classList.add('incorrect');
         quizFeedback.textContent = `Oops! Correct answer: ${cards[currentApplicationIndex].back}`;
@@ -1165,11 +1166,8 @@
             btn.classList.add('correct');
           }
         });
-        congratulationsMessage.style.display = 'none';
+        if (congratulationsMessage) congratulationsMessage.style.display = 'none';
       }
-
-      // Update progress after answering
-      updateApplicationProgress();
     }
 
     // Keyboard navigation on flashcard container
@@ -1416,7 +1414,8 @@
     { title: "Autumn", src: "autumn.mp3" },
     { title: "Multo", src: "multo.mp3" },
     { title: "Apartment", src: "apartment.mp3" },
-    { title: "Love", src: "love.mp3" } // <-- Added your new song here
+    { title: "Love", src: "love.mp3" },
+    { title: "All The Stars", src: "allthestars.mp3" } // <-- Added your new song here
   ];
   let currentTrack = 0;
   let isPlaying = false;
